@@ -1,0 +1,12 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+/.pnp
+.pnp.js
+.cache/
+coverage/
+*.log
+/*.tgz
+/.DS_Store
