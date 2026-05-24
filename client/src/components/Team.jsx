@@ -94,41 +94,8 @@ export default function Team() {
             </button>
           </div>
         </div>
-        return 'bg-tertiary/10 text-tertiary font-bold'
-      case 'Away':
-        return 'bg-[#FFC107]/10 text-[#FFA000] font-bold'
-      case 'Offline':
-        return 'bg-error/10 text-error font-bold'
-      default:
-        return 'bg-surface-container text-on-surface'
-    }
-  }
 
-  return (
-    <div className="flex flex-col gap-8">
-      {/* Page Header */}
-      <div className="flex flex-col lg:flex-row justify-between gap-5">
-        <div>
-          <h2 className="text-4xl font-bold text-on-surface">Team Management</h2>
-          <p className="text-body-base text-on-surface-variant mt-2">
-            Manage permissions, invite new contributors, and monitor sprint activity.
-          </p>
-        </div>
-
-        <div className="flex gap-3">
-          <button className="border border-outline-variant px-5 py-3 rounded-xl flex items-center gap-2 hover:border-primary transition-colors text-on-surface">
-            <span className="material-symbols-outlined">download</span>
-            Export CSV
-          </button>
-
-          <button className="bg-primary text-on-primary px-5 py-3 rounded-xl flex items-center gap-2 hover:opacity-90 transition-all">
-            <span className="material-symbols-outlined">person_add</span>
-            Invite Member
-          </button>
-        </div>
-      </div>
-
-      {/* Stats Grid */}
+        {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
         {stats.map((item, index) => (
           <div key={index} className="bg-surface border border-outline-variant rounded-2xl p-5">
@@ -307,6 +274,7 @@ export default function Team() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   )
 }

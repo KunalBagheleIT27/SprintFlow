@@ -35,7 +35,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col justify-center items-center px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-background flex flex-col justify-center items-center px-4 relative overflow-y-auto scrollbar-hide">
       {/* Top accent line */}
       <div className="fixed top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-primary-light to-transparent"></div>
 
@@ -80,8 +80,12 @@ export default function Login() {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <label className="text-sm font-semibold text-text-primary">Password</label>
-                <button type="button" className="text-sm text-primary hover:text-primary-dark transition-colors font-semibold">
-                  Forgot?
+                <button 
+                  type="button" 
+                  onClick={() => navigate('/forgot-password')}
+                  className="text-sm text-primary hover:text-primary-dark transition-colors font-semibold"
+                >
+                  Forgot password?
                 </button>
               </div>
               <div className="relative">
@@ -146,11 +150,11 @@ export default function Login() {
 
         {/* Sign Up Link */}
         <div className="mt-8 text-center">
-          <p className="text-text-secondary font-medium">
-            Don't have an account?
+          <p className="text-text-secondary font-medium text-sm">
+            Don't have an account?{' '}
             <button
               onClick={() => navigate('/signup')}
-              className="text-primary font-semibold hover:text-primary-dark transition-colors ml-1"
+              className="text-primary font-semibold hover:text-primary-dark transition-colors ml-1 underline"
             >
               Create one
             </button>

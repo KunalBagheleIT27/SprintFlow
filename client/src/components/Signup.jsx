@@ -36,12 +36,12 @@ export default function Signup() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col justify-center items-center px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-background flex flex-col justify-center items-center px-4 py-8 relative overflow-y-auto scrollbar-hide">
       {/* Top Line */}
       <div className="fixed top-0 left-0 w-full h-1 bg-primary"></div>
 
       {/* Main Container */}
-      <main className="w-full max-w-[420px]">
+      <main className="w-full max-w-[420px] flex-shrink-0">
         {/* Branding */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-3">
@@ -228,11 +228,11 @@ export default function Signup() {
 
         {/* Footer */}
         <div className="mt-8 text-center">
-          <p className="text-on-surface-variant text-body-base">
+          <p className="text-on-surface-variant text-body-sm">
             Already have an account?{' '}
             <button
               onClick={() => navigate('/login')}
-              className="text-primary font-bold hover:opacity-80 transition-opacity"
+              className="text-primary font-bold hover:text-primary-dark transition-colors underline"
             >
               Sign in
             </button>

@@ -14,6 +14,7 @@ import Projects from './components/Projects'
 import ProjectDetail from './components/ProjectDetail'
 import Login from './components/Login'
 import Signup from './components/Signup'
+import ForgotPassword from './components/ForgotPassword'
 
 function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState('dashboard')
@@ -51,6 +52,7 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/dashboard" element={<DashboardLayout />} />
       <Route path="/dashboard/project/:projectId" element={<ProjectDetailLayout />} />
       <Route path="/" element={<Navigate to="/login" replace />} />
