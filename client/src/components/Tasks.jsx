@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import CreateTaskModal from './CreateTaskModal'
+import { useNavigate } from 'react-router-dom'
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([
@@ -92,6 +94,21 @@ export default function Tasks() {
         return 'unfold_more'
     }
   }
+  const [viewMode, setViewMode] = useState('list')
+  const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const navigate = useNavigate()
+
+  const applyRecommendation = () => {
+    // Find SF-1031 and set status to In Progress
+    setTasks((prev) => prev.map((t) => (t.id === 'SF-1031' ? { ...t, status: 'In Progress' } : t)))
+    // feedback: simple animation via class toggle (handled by re-render)
+  }
+
+  const handleCreate = (task) => {
+    setTasks((prev) => [task, ...prev])
+  }
+
+  const goBack = () => navigate(-1)
 
   return (
     <div className="flex flex-col gap-8">
@@ -107,21 +124,22 @@ export default function Tasks() {
             <h2 className="text-[32px] font-display-lg font-bold text-on-surface">Active Backlog</h2>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex bg-surface-container-low border border-outline-variant p-1 rounded-lg">
-              <button className="flex items-center gap-2 px-3 py-1.5 bg-surface-container-highest text-primary font-bold rounded-md font-label-md">
-                <span className="material-symbols-outlined text-sm">list</span>
-                List
+              <div className="flex bg-surface-container-low border border-outline-variant p-1 rounded-lg">
+                <button onClick={() => setViewMode('list')} className={`flex items-center gap-2 px-3 py-1.5 rounded-md font-label-md ${viewMode==='list' ? 'bg-surface-container-highest text-primary font-bold' : 'text-on-surface-variant hover:text-on-surface'}`}>
+                  <span className="material-symbols-outlined text-sm">list</span>
+                  List
+                </button>
+                <button onClick={() => setViewMode('board')} className={`flex items-center gap-2 px-3 py-1.5 rounded-md font-label-md ${viewMode==='board' ? 'bg-surface-container-highest text-primary font-bold' : 'text-on-surface-variant hover:text-on-surface'}`}>
+                  <span className="material-symbols-outlined text-sm">view_kanban</span>
+                  Board
+                </button>
+              </div>
+              <button onClick={() => setIsCreateOpen(true)} className="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-md flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+                <span className="material-symbols-outlined text-sm">add</span>
+                Create Task
               </button>
-              <button className="flex items-center gap-2 px-3 py-1.5 text-on-surface-variant hover:text-on-surface rounded-md font-label-md transition-colors">
-                <span className="material-symbols-outlined text-sm">view_kanban</span>
-                Board
-              </button>
+              <button onClick={goBack} className="ml-2 px-3 py-1.5 border border-outline-variant rounded-md text-on-surface-variant hover:text-on-surface transition-colors">Back</button>
             </div>
-            <button className="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-md flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all">
-              <span className="material-symbols-outlined text-sm">add</span>
-              Create Task
-            </button>
-          </div>
         </div>
 
         {/* Filters Strip */}
@@ -257,7 +275,7 @@ export default function Tasks() {
         </div>
       </div>
 
-      {/* Quick Insights Bento Section */}
+        {/* Quick Insights Bento Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Weekly Velocity */}
         <div className="bg-surface border border-outline-variant rounded-xl p-6 flex flex-col gap-4">
@@ -265,14 +283,21 @@ export default function Tasks() {
             <h3 className="text-on-surface font-title-sm">Weekly Velocity</h3>
             <span className="text-tertiary font-label-xs font-bold">+12% vs last week</span>
           </div>
-          <div className="flex items-end gap-2 h-20">
+          <div className="flex items-end gap-2 h-24 transition-all duration-700">
             {[40, 60, 55, 80, 95].map((height, idx) => (
               <div
                 key={idx}
-                className={`w-full rounded-t-sm ${idx === 4 ? 'bg-primary' : 'bg-primary/10'}`}
+                className={`w-full rounded-t-md transition-all duration-700 ${idx === 4 ? 'bg-primary/90' : 'bg-primary/20'}`}
                 style={{ height: `${height}%` }}
               ></div>
             ))}
+          </div>
+          <div className="flex items-center justify-between text-on-surface-variant text-sm">
+            <span>Mon</span>
+            <span>Tue</span>
+            <span>Wed</span>
+            <span>Thu</span>
+            <span>Fri</span>
           </div>
         </div>
 
@@ -318,20 +343,23 @@ export default function Tasks() {
         </div>
 
         {/* Sprint AI Insight */}
-        <div className="bg-primary text-on-primary rounded-xl p-6 flex flex-col justify-between relative overflow-hidden group">
-          <div className="absolute -right-8 -top-8 w-32 h-32 bg-on-primary/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
-          <div className="flex items-center gap-3 relative z-10">
-            <span className="material-symbols-outlined text-2xl">auto_awesome</span>
+        <div className="bg-surface border border-outline-variant rounded-xl p-6 flex flex-col justify-between relative overflow-hidden group">
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-2xl text-primary">auto_awesome</span>
             <h3 className="font-title-sm">Sprint AI Insight</h3>
           </div>
-          <p className="font-body-sm leading-relaxed relative z-10 opacity-90">
+          <p className="font-body-sm leading-relaxed text-on-surface-variant">
             Based on team capacity, you are on track to complete SF-1042 ahead of schedule. Consider pulling SF-1031 into the current sprint.
           </p>
-          <button className="bg-on-primary text-primary px-3 py-1.5 rounded-lg font-label-md w-fit relative z-10 hover:bg-surface-bright transition-colors">
-            Apply Recommendation
-          </button>
+          <div className="flex items-center gap-3">
+            <button onClick={applyRecommendation} className="bg-primary text-on-primary px-3 py-1.5 rounded-lg font-label-md w-fit hover:opacity-95 transition-all">
+              Apply Recommendation
+            </button>
+            <button onClick={() => alert('More info coming soon')} className="px-3 py-1.5 border border-outline-variant rounded-lg">Details</button>
+          </div>
         </div>
       </div>
+      <CreateTaskModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} onSave={handleCreate} />
     </div>
   )
 }

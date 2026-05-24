@@ -1,9 +1,9 @@
 import React from 'react'
 import TaskCard from './TaskCard'
 
-export default function KanbanColumn({ title, count, tasks, isDone = false }) {
+export default function KanbanColumn({ title, count, tasks, isDone = false, onTaskClick, onAddClick, onEdit, onDelete, onMove }) {
   return (
-    <div className="flex-shrink-0 w-72 flex flex-col gap-3">
+    <div className="w-full flex flex-col gap-3">
       {/* Column Header */}
       <div className="flex items-center justify-between px-2 py-1">
         <div className="flex items-center gap-2">
@@ -14,9 +14,14 @@ export default function KanbanColumn({ title, count, tasks, isDone = false }) {
             {count}
           </span>
         </div>
-        <span className="material-symbols-outlined text-outline cursor-pointer hover:text-on-surface transition-colors">
-          {isDone ? 'done_all' : title === 'Todo' ? 'add' : 'more_horiz'}
-        </span>
+        <div className="flex items-center gap-2">
+          {title === 'Todo' && (
+            <button onClick={onAddClick} className="material-symbols-outlined text-outline cursor-pointer hover:text-on-surface transition-colors">add</button>
+          )}
+          <span className="material-symbols-outlined text-outline cursor-pointer hover:text-on-surface transition-colors">
+            {isDone ? 'done_all' : 'more_horiz'}
+          </span>
+        </div>
       </div>
 
       {/* Column Content */}
@@ -24,10 +29,17 @@ export default function KanbanColumn({ title, count, tasks, isDone = false }) {
         className={`kanban-column flex flex-col gap-3 overflow-y-auto no-scrollbar ${
           isDone ? 'opacity-60 grayscale-[0.5]' : ''
         }`}
-        style={{ minHeight: 'calc(100vh - 12rem)' }}
+        style={{ maxHeight: 'calc(100vh - 16rem)' }}
       >
         {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard
+            key={task.id}
+            task={task}
+            onClick={() => onTaskClick ? onTaskClick(task) : console.log('Task clicked', task.id)}
+            onEdit={() => onEdit && onEdit(task)}
+            onDelete={() => onDelete && onDelete(task.id)}
+            onMove={(to) => onMove && onMove(task.id, to)}
+          />
         ))}
       </div>
     </div>

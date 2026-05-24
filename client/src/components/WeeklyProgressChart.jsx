@@ -1,59 +1,89 @@
 import React from 'react'
 
 export default function WeeklyProgressChart() {
-  const chartData = [40, 65, 55, 82, 70, 90, 85]
+  const actualData = [92, 84, 73, 66, 54, 38, 24]
+  const projectedData = [100, 88, 76, 64, 52, 40, 28]
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
   const maxHeight = 100
+  const gapText = actualData[0] > projectedData[0] ? 'Ahead of plan' : 'Behind plan'
 
   return (
-    <div className="lg:col-span-2 bg-white rounded-xl border border-outline-variant p-6 flex flex-col">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h4 className="font-title-sm text-title-sm text-on-surface">Weekly Progress Overview</h4>
-          <p className="text-on-surface-variant font-label-md text-label-md">Burn-down chart vs projected velocity</p>
+    <div className="lg:col-span-2 card-premium p-6 flex flex-col gap-5">
+      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-semibold w-fit">
+            Weekly Progress Overview
+          </div>
+          <h4 className="text-title-sm font-bold text-on-surface">Burn-down chart vs projected velocity</h4>
+          <p className="text-sm text-on-surface-variant max-w-xl">
+            Compare how quickly work is burning down against the planned sprint velocity for the week.
+          </p>
         </div>
-        <div className="flex gap-4">
+
+        <div className="flex flex-wrap gap-3">
+          <div className="rounded-xl border border-border bg-surface-container-lowest px-3 py-2">
+            <p className="text-[11px] text-on-surface-variant">Current trend</p>
+            <p className="font-bold text-on-surface">{gapText}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-surface-container-lowest px-3 py-2">
+            <p className="text-[11px] text-on-surface-variant">Sprint completion</p>
+            <p className="font-bold text-on-surface">68%</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-border bg-surface-container-lowest p-5">
+        <div className="relative min-h-[280px]">
+          <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
+            {[0, 25, 50, 75, 100].map((mark) => (
+              <div key={mark} className="flex items-center gap-3">
+                <span className="w-10 text-[11px] font-semibold text-on-surface-variant text-right">{mark}%</span>
+                <div className="h-px flex-1 bg-border/70" />
+              </div>
+            ))}
+          </div>
+
+          <div className="relative z-10 flex items-end justify-between gap-3 h-[280px] pl-12 pr-2 pt-2 pb-12">
+            {days.map((day, idx) => (
+              <div key={day} className="flex-1 h-full flex flex-col justify-end items-center gap-2 group">
+                <div className="relative w-full max-w-[44px] h-full flex items-end justify-center">
+                  <div
+                    className="absolute bottom-0 w-[78%] rounded-t-xl bg-primary/15 border-t-2 border-primary/35 transition-all duration-500 group-hover:bg-primary/20"
+                    style={{ height: `${(projectedData[idx] / maxHeight) * 100}%` }}
+                  />
+                  <div
+                    className="absolute bottom-0 w-[78%] rounded-t-xl bg-gradient-to-t from-primary/80 to-primary shadow-md transition-all duration-500 group-hover:from-primary/90 group-hover:to-primary"
+                    style={{ height: `${(actualData[idx] / maxHeight) * 100}%` }}
+                  />
+                  <div
+                    className="absolute left-1/2 -translate-x-1/2 -top-7 hidden group-hover:block bg-inverse-surface text-white text-[10px] px-2 py-1 rounded whitespace-nowrap z-20"
+                    style={{ bottom: `calc(${actualData[idx]}% + 8px)` }}
+                  >
+                    Actual {actualData[idx]}%
+                  </div>
+                </div>
+                <div className="text-center">
+                  <p className="text-[11px] font-semibold text-on-surface-variant">{day}</p>
+                  <p className="text-[11px] font-bold text-on-surface">{actualData[idx]}%</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-4 text-[11px] text-on-surface-variant">
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded-full bg-primary"></span>
-            <span className="text-[11px] font-medium text-on-surface">Actual</span>
+            Actual burn-down
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-surface-variant"></span>
-            <span className="text-[11px] font-medium text-on-surface-variant">Target</span>
+            <span className="w-3 h-3 rounded-full bg-primary/25 border border-primary/35"></span>
+            Projected velocity
+          </div>
+          <div className="ml-auto font-semibold text-on-surface">
+            {gapText}: {actualData[0] - actualData[6]}% improvement over the week
           </div>
         </div>
-      </div>
-
-      {/* Chart Area */}
-      <div className="flex-1 relative min-h-[220px] flex items-end justify-between px-2 gap-4">
-        {/* Background Grid Lines */}
-        <div className="absolute inset-0 flex flex-col justify-between py-2 border-b border-outline-variant pointer-events-none">
-          <div className="border-t border-slate-50 w-full"></div>
-          <div className="border-t border-slate-50 w-full"></div>
-          <div className="border-t border-slate-50 w-full"></div>
-          <div className="border-t border-slate-50 w-full"></div>
-        </div>
-
-        {/* Chart Bars */}
-        {chartData.map((value, idx) => (
-          <div
-            key={idx}
-            className="flex-1 relative group cursor-pointer transition-all"
-            style={{ height: `${(value / maxHeight) * 100}%` }}
-          >
-            <div className="w-full h-full bg-primary/10 border-t-2 border-primary rounded-t-sm hover:bg-primary/20 transition-all"></div>
-            <div className="hidden group-hover:block absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-white text-[10px] px-2 py-1 rounded whitespace-nowrap z-10">
-              {value}%
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* X-axis Labels */}
-      <div className="flex justify-between mt-4 text-[10px] font-medium text-on-surface-variant px-2 uppercase tracking-tighter">
-        {days.map((day) => (
-          <span key={day}>{day}</span>
-        ))}
       </div>
     </div>
   )

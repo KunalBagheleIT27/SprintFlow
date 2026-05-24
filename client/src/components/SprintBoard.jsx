@@ -1,5 +1,7 @@
 import React from 'react'
 import KanbanColumn from './KanbanColumn'
+import TaskDetailModal from './TaskDetailModal'
+import { useState } from 'react'
 
 const SPRINT_DATA = {
   title: 'Sprint 12: Core Infrastructure',
@@ -88,6 +90,71 @@ const TASKS = {
 }
 
 export default function SprintBoard() {
+  const [selectedTask, setSelectedTask] = useState(null)
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
+  const [boardTasks, setBoardTasks] = useState(TASKS)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [editInitial, setEditInitial] = useState(null)
+
+  const openTaskModal = (task) => {
+    setSelectedTask(task)
+    setIsTaskModalOpen(true)
+  }
+
+  const closeTaskModal = () => {
+    setIsTaskModalOpen(false)
+    setSelectedTask(null)
+  }
+  const openCreateModal = (initial) => {
+    setEditInitial(initial || null)
+    setIsCreateModalOpen(true)
+  }
+
+  const closeCreateModal = () => {
+    setIsCreateModalOpen(false)
+    setEditInitial(null)
+  }
+
+  const saveTask = (task) => {
+    // Determine if update or create
+    setBoardTasks((prev) => {
+      // search in all lists
+      const lists = { ...prev }
+      // remove existing if exists
+      Object.keys(lists).forEach((k) => {
+        lists[k] = lists[k].filter((t) => t.id !== task.id)
+      })
+      // default add to todo
+      lists.todo = [task, ...lists.todo]
+      return lists
+    })
+  }
+
+  const deleteTask = (taskId) => {
+    setBoardTasks((prev) => {
+      const lists = { ...prev }
+      Object.keys(lists).forEach((k) => {
+        lists[k] = lists[k].filter((t) => t.id !== taskId)
+      })
+      return lists
+    })
+  }
+
+  const moveTask = (taskId, toList) => {
+    setBoardTasks((prev) => {
+      const lists = { ...prev }
+      let moving = null
+      Object.keys(lists).forEach((k) => {
+        const found = lists[k].find((t) => t.id === taskId)
+        if (found) {
+          moving = found
+          lists[k] = lists[k].filter((t) => t.id !== taskId)
+        }
+      })
+      if (moving) lists[toList] = [moving, ...lists[toList]]
+      return lists
+    })
+  }
   return (
     <>
       {/* BOARD HEADER */}
@@ -130,21 +197,27 @@ export default function SprintBoard() {
         </div>
       </div>
 
-      {/* KANBAN GRID */}
-      <div className="flex-grow flex gap-6 overflow-x-auto no-scrollbar pb-4">
-        <KanbanColumn title="Todo" count={4} tasks={TASKS.todo} />
-        <KanbanColumn title="In Progress" count={3} tasks={TASKS.inProgress} />
-        <KanbanColumn title="Review" count={2} tasks={TASKS.review} />
-        <KanbanColumn title="Done" count={18} tasks={TASKS.done} isDone={true} />
+      {/* KANBAN GRID - responsive grid to avoid horizontal scroll */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-4 auto-rows-min">
+        <KanbanColumn title="Todo" count={boardTasks.todo.length} tasks={boardTasks.todo} onTaskClick={openTaskModal} onAddClick={() => openCreateModal()} onEdit={openCreateModal} onDelete={deleteTask} onMove={moveTask} />
+        <KanbanColumn title="In Progress" count={boardTasks.inProgress.length} tasks={boardTasks.inProgress} onTaskClick={openTaskModal} onAddClick={() => openCreateModal()} onEdit={openCreateModal} onDelete={deleteTask} onMove={moveTask} />
+        <KanbanColumn title="Review" count={boardTasks.review.length} tasks={boardTasks.review} onTaskClick={openTaskModal} onAddClick={() => openCreateModal()} onEdit={openCreateModal} onDelete={deleteTask} onMove={moveTask} />
+        <KanbanColumn title="Done" count={boardTasks.done.length} tasks={boardTasks.done} isDone={true} onTaskClick={openTaskModal} onAddClick={() => openCreateModal()} onEdit={openCreateModal} onDelete={deleteTask} onMove={moveTask} />
 
-        {/* Add Status Column */}
-        <div className="flex-shrink-0 w-72 flex flex-col justify-start pt-1">
-          <button className="w-full flex items-center justify-center gap-2 py-4 border-2 border-dashed border-outline-variant rounded-lg text-outline hover:border-primary hover:text-primary hover:bg-surface-container transition-all">
+        {/* Add Status Card */}
+        <div className="w-full flex flex-col justify-start pt-1">
+          <button
+            onClick={() => openCreateModal()}
+            className="w-full flex items-center justify-center gap-2 py-4 border-2 border-dashed border-outline-variant rounded-lg text-outline hover:border-primary hover:text-primary hover:bg-surface-container transition-all"
+          >
             <span className="material-symbols-outlined">add</span>
-            <span className="text-label-md font-label-md">Add Status</span>
+            <span className="text-label-md font-label-md">Add Task</span>
           </button>
         </div>
       </div>
+
+      <TaskDetailModal isOpen={isTaskModalOpen} onClose={closeTaskModal} task={selectedTask} />
+      <CreateTaskModal isOpen={isCreateModalOpen} onClose={closeCreateModal} onSave={saveTask} initial={editInitial} />
     </>
   )
 }

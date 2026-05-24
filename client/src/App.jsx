@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
 import Navbar from './components/Navbar'
 import SprintBoard from './components/SprintBoard'
@@ -18,11 +18,47 @@ import ForgotPassword from './components/ForgotPassword'
 
 function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState('dashboard')
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    // derive current page from URL
+    const path = location.pathname.replace('/dashboard', '')
+    if (!path || path === '/') return setCurrentPage('dashboard')
+    const seg = path.split('/')[1] || ''
+    switch (seg) {
+      case 'sprint-board': setCurrentPage('sprint-board'); break
+      case 'analytics': setCurrentPage('analytics'); break
+      case 'sprint-intelligence': setCurrentPage('sprint-intelligence'); break
+      case 'tasks': setCurrentPage('tasks'); break
+      case 'team': setCurrentPage('team'); break
+      case 'projects': setCurrentPage('projects'); break
+      case 'settings': setCurrentPage('settings'); break
+      default: setCurrentPage('dashboard')
+    }
+  }, [location.pathname])
+
+  const handlePageChange = (id) => {
+    setCurrentPage(id)
+    // navigate to canonical route for section
+    const routeMap = {
+      'dashboard': '/dashboard',
+      'sprint-board': '/dashboard/sprint-board',
+      'analytics': '/dashboard/analytics',
+      'sprint-intelligence': '/dashboard/sprint-intelligence',
+      'tasks': '/dashboard/tasks',
+      'team': '/dashboard/team',
+      'projects': '/dashboard/projects',
+      'settings': '/dashboard/settings',
+    }
+    // keep as single route; components are controlled via state
+    navigate(routeMap[id] || '/dashboard')
+  }
 
   return (
     <div className="flex h-screen w-screen bg-background overflow-hidden">
       {/* SIDEBAR — fixed, 240px wide */}
-      <Sidebar activePage={currentPage} onPageChange={setCurrentPage} />
+      <Sidebar activePage={currentPage} onPageChange={handlePageChange} />
 
       {/* MAIN CONTENT — offset by sidebar width */}
       <main className="flex-1 ml-sidebar-width flex flex-col h-screen min-w-0">
@@ -53,7 +89,7 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/dashboard" element={<DashboardLayout />} />
+      <Route path="/dashboard/*" element={<DashboardLayout />} />
       <Route path="/dashboard/project/:projectId" element={<ProjectDetailLayout />} />
       <Route path="/" element={<Navigate to="/login" replace />} />
     </Routes>
